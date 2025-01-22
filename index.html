@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Heading centered */
+        h1 {
+            text-align: center;
+        }
+
+        /* Body text with left alignment */
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        /* Text container margins */
+        .text-container {
+            margin: 0 auto;
+            max-width: 800px;
+            text-align: left;
+            font-size: large;
+        }
+
+        /* Labels aligned */
+        label {
+            margin-right: 10px;
+        }
+
+        /* Images centered */
+        img {
+            display: block;
+            margin: 20px auto; /* Centers the image horizontally */
+            max-width: 100%;
+            height: auto;
+            border: none;
+            outline: none;
+        }
+
+        /* Input selectors centered */
+        .selectors {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Ordered list styling */
+        ol {
+            margin-left: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Removing Data Spikes</h1>
+
+    <div class="text-container">
+        <h3>What is a spike?</h3>
+        <p>We can think of a spike as somewhere we see that the data has been fairly consistent around some value
+            and then suddenly jumps up or down by some amount and then jumps back
+            to that previous range.</p>
+        <p>For example, in this set of points, it is quite clear which point is the outlier:</p>
+    </div>
+
+    <img id="firstExample" width="700" src="firstExample.png" alt="First Example">
+
+
+    <div class="text-container">
+        <p>But then sometimes it's more ambigious. Have a look at this example:</p>
+    </div>
+
+    <img id="secondExample" width="700" src="secondExample.png" alt="Second Example">
+
+    <div class="text-container">
+        <p>We therefore have some choices to make on how much an <b>'outlier'</b> is an outlier and have some <b>choices</b> in how to define that.</p>
+        <h3><br>Our spike 'model'</h3>
+        <p>At a given point we have three things to consider (variablise) when we want to decide if it's an outlier:</p>
+        <ol>
+            <li>Is this point a large (what we are calling a <b>threshold</b>) enough jump away from other points around it?</li>
+            <li>Does it jump back to the range of surrounding (what we are calling a <b>global window</b>) values?</li>
+            <li>If so, how quickly (we are calling this a <b>local window</b>)?
+                For instance, example 2 jumps more slowly than example 1</li>
+        </ol>
+        
+    
+        <p><br>We define the <b>local window</b> as the number of values on the left and right of the element.<br>The <b>global window</b> is the number of values on the left of the local window and the right of the local window and the size of the <b>threshold</b> as the jump. The below annotated example shows: global window=2, local window = 1, threshold=3.</p>
+        </div>
+        <img id="annotated" width="700" src="annotated.png" alt="Annotated Example">
+    <div class="text-container">
+        <p>Now, if we want to detect if a certain element is where a spike occurs, what we can do is check if it matches both of these conditions:</p>
+        <ol>
+            <li>Is this element a jump bigger than the threshold from any elements in the global window?</li>
+            <li>Is the left global window range 'roughly' equal to the right</li>
+        </ol>
+    <h3><br>Try 👷</h3>
+    </div>
+    
+    <img id="displayImage" src="" alt="Selected Image">
+
+    <div class="selectors">
+        <label for="globalWindow">Global Window:</label>
+        <span id="globalWindowValue">1</span>
+        <input type="range" id="globalWindow" min="1" max="10" step="1" value="1">
+        <br><br>
+        <label for="localWindow">Local Window:</label>
+        <span id="localWindowValue">1</span>
+        <input type="range" id="localWindow" min="1" max="10" step="1" value="1">
+        <br><br>
+        <label for="threshold">Threshold:</label>
+        <span id="thresholdValue">0</span>
+        <input type="range" id="threshold" min="0" max="30000" step="2000" value="0">
+        <br><br>
+        <p id="imagePath"></p>
+    </div>
+
+    <script>
+        const thresholdInput = document.getElementById('threshold');
+        const globalWindowInput = document.getElementById('globalWindow');
+        const localWindowInput = document.getElementById('localWindow');
+
+        const thresholdValue = document.getElementById('thresholdValue');
+        const globalWindowValue = document.getElementById('globalWindowValue');
+        const localWindowValue = document.getElementById('localWindowValue');
+
+        const displayImage = document.getElementById('displayImage');
+        const imagePath = document.getElementById('imagePath');
+
+        function updateImage() {
+            const threshold = thresholdInput.value;
+            const globalWindow = globalWindowInput.value;
+            const localWindow = localWindowInput.value;
+
+            thresholdValue.textContent = threshold;
+            globalWindowValue.textContent = globalWindow;
+            localWindowValue.textContent = localWindow;
+            //const imageSrc = `https://raw.githubusercontent.com/dylanfranks3/puckmat/refs/heads/master/imgs/${threshold}_${globalWindow}_${localWindow}.jpeg`;
+            const imageSrc = `imgs/${threshold}_${globalWindow}_${localWindow}.jpeg`;
+            displayImage.src = imageSrc;
+
+            imagePath.textContent = `Current Image Path: ${imageSrc}`;
+        }
+
+        thresholdInput.addEventListener('input', updateImage);
+        globalWindowInput.addEventListener('input', updateImage);
+        localWindowInput.addEventListener('input', updateImage);
+
+        globalWindow.addEventListener('load', updateImage);
+        localWindow.addEventListener('load', updateImage);
+    </script>
+</body>
+
+</html>
